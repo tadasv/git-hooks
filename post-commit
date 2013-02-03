@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# An example hook script that is called after a successful
+# commit is made.
+#
+# To enable this hook, rename this file to "post-commit".
+
+# Keep history of commits
+# TODO move this into a separate script
+COMMIT_LOG_FOLDER=/Users/tadas/logs/git
+LOG_FILE=`date +commits-%Y-%m-%d.log`
+LAST_COMMIT=`git log --pretty=format:"%H %ct %s" -n 1`
+mkdir -p ${COMMIT_LOG_FOLDER}
+echo ${LAST_COMMIT} >> ${COMMIT_LOG_FOLDER}/${LOG_FILE}
