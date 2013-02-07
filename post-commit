@@ -7,8 +7,29 @@
 
 # Keep history of commits
 # TODO move this into a separate script
+
+. git-sh-setup
+
+TOTAL_DIFF=`git diff-tree --no-prefix -r HEAD | {
+  total=0
+  while read A B C D M P
+  do
+    case $M in
+      M) bytes=$(( $(git cat-file -s $D) - $(git cat-file -s $C) )) ;;
+      A) bytes=$(git cat-file -s $D) ;;
+      D) bytes=-$(git cat-file -s $C) ;;
+      *)
+        continue
+        ;;
+    esac
+    total=$(( $total + $bytes ))
+  done
+  echo $total
+}`
+
 COMMIT_LOG_FOLDER=/Users/tadas/logs/git
 LOG_FILE=`date +commits-%Y-%m-%d.log`
-LAST_COMMIT=`git log --pretty=format:"%H %ct %s" -n 1`
+
+LAST_COMMIT=`git log --pretty=format:"%H %ct ${TOTAL_DIFF} %s" -n 1`
 mkdir -p ${COMMIT_LOG_FOLDER}
 echo ${LAST_COMMIT} >> ${COMMIT_LOG_FOLDER}/${LOG_FILE}
